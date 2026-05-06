@@ -301,7 +301,7 @@ function renderHome() {
       </div>
 
       <div class="toolbar">
-        <button class="btn primary" data-action="show-result" ${progress.ready ? "" : "disabled"}>生成综合评语</button>
+        <button class="btn primary" data-action="show-result">生成综合评语</button>
         <button class="btn" data-action="reset">清空选择</button>
       </div>
 
@@ -430,15 +430,33 @@ function renderResult() {
 
 function generateReview() {
   const selections = state.selections;
-  const lines = [
-    "综合评语：",
-    `图片描述方面，A 同学部分：${selections.picture.a.text}`,
-    `图片描述方面，B 同学部分：${selections.picture.b.text}`,
-    `关系链接方面，${selections.relation.text}`,
-    `逻辑推进方面，${selections.logic.text}`,
-    `主题提炼方面，${selections.theme.text}`,
-    "总体来看，本次点评可继续围绕画面细节、信息联系、表达层次和中心提炼进行跟进，让学生在观察准确性和表达完整性上同步提升。",
-  ];
+  const lines = ["综合评语："];
+
+  if (selections.picture.a) {
+    lines.push(`图片描述方面，A 同学部分：${selections.picture.a.text}`);
+  }
+
+  if (selections.picture.b) {
+    lines.push(`图片描述方面，B 同学部分：${selections.picture.b.text}`);
+  }
+
+  if (selections.relation) {
+    lines.push(`关系链接方面，${selections.relation.text}`);
+  }
+
+  if (selections.logic) {
+    lines.push(`逻辑推进方面，${selections.logic.text}`);
+  }
+
+  if (selections.theme) {
+    lines.push(`主题提炼方面，${selections.theme.text}`);
+  }
+
+  if (lines.length === 1) {
+    lines.push("暂未选择任何点评话术。可以先选择一个模块，再生成当前评语。");
+  } else {
+    lines.push("总体来看，本次点评可继续围绕画面细节、信息联系、表达层次和中心提炼进行跟进，让学生在观察准确性和表达完整性上同步提升。");
+  }
 
   return lines.join("\n");
 }
@@ -482,9 +500,7 @@ function bindEvents() {
 
   document.querySelectorAll("[data-action='show-result']").forEach((element) => {
     element.addEventListener("click", () => {
-      if (getProgress().ready) {
-        navigate({ name: "result" });
-      }
+      navigate({ name: "result" });
     });
   });
 
